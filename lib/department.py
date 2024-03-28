@@ -1,6 +1,5 @@
 from __init__ import CURSOR, CONN
 
-
 class Department:
 
     def __init__(self, name, location, id=None):
@@ -11,19 +10,6 @@ class Department:
     def __repr__(self):
         return f"<Department {self.id}: {self.name}, {self.location}>"
 
-    @classmethod
-    def create(cls, data):
-        # Assuming data is a dictionary containing department information
-        name = data.get('name')
-        location = data.get('location')
-        # Insert logic to create a new row in the database with the provided data
-        # For example:
-        # Insert SQL query to insert data into the department table
-        # Example: INSERT INTO department (name, location) VALUES (?, ?)
-        # Execute the query and commit the transaction
-
-        # After inserting, return a new Department instance
-        return cls(name, location)
     @classmethod
     def create_table(cls):
         """ Create a new table to persist the attributes of Department instances """
@@ -36,7 +22,7 @@ class Department:
         CURSOR.execute(sql)
         CONN.commit()
 
-    @classmethod 
+    @classmethod
     def drop_table(cls):
         """ Drop the table that persists Department instances """
         sql = """
@@ -59,15 +45,22 @@ class Department:
 
         self.id = CURSOR.lastrowid
 
+    @classmethod
+    def create(cls, name, location):
+        """ Initialize a new Department instance and save the object to the database """
+        department = cls(name, location)
+        department.save()
+        return department
+
     def update(self):
-         """Update the table row corresponding to the current Department instance."""
-         sql = """
+        """Update the table row corresponding to the current Department instance."""
+        sql = """
             UPDATE departments
             SET name = ?, location = ?
             WHERE id = ?
         """
-         CURSOR.execute(sql, (self.name, self.location, self.id))
-         CONN.commit()
+        CURSOR.execute(sql, (self.name, self.location, self.id))
+        CONN.commit()
 
     def delete(self):
         """Delete the table row corresponding to the current Department instance"""
@@ -78,3 +71,4 @@ class Department:
 
         CURSOR.execute(sql, (self.id,))
         CONN.commit()
+
